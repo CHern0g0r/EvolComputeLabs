@@ -1,4 +1,4 @@
-def boyer_moore(s: str, t: str) -> int:
+def boyer_moorec(s: str, t: str) -> int:
     res = []
 
     st = dict()

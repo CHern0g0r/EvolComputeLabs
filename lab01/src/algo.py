@@ -64,7 +64,10 @@ def parallel(s: str, t: str, n: int = 8):
             (s[i * tlen: (i + 2) * tlen] for i in range(steps)),
             repeat(t)
         )
-        results = map(lambda x: map(lambda y: y + x[1] * tlen, x[0]), zip(results, range(steps)))
+        results = map(
+            lambda x: map(lambda y: y + x[1] * tlen, x[0]),
+            zip(results, range(steps))
+        )
     results = {x for sublist in results for x in sublist}
     return results
 
