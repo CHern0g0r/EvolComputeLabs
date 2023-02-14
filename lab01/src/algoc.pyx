@@ -1,8 +1,3 @@
-from itertools import repeat
-from argparse import ArgumentParser
-from concurrent.futures import ThreadPoolExecutor
-
-
 def boyer_moore(s: str, t: str) -> int:
     res = []
 
@@ -53,26 +48,3 @@ def boyer_moore(s: str, t: str) -> int:
             i += max(ss[j + 1], j - st.get(s[i + j], -1))
 
     return res
-
-
-def parallel(s: str, t: str, n: int = 8):
-    steps = len(s) // len(t)
-    tlen = len(t)
-    with ThreadPoolExecutor(max_workers=n) as tpe:
-        results = tpe.map(
-            boyer_moore,
-            (s[i * tlen: (i + 2) * tlen] for i in range(steps)),
-            repeat(t)
-        )
-        results = map(lambda x: map(lambda y: y + x[1] * tlen, x[0]), zip(results, range(steps)))
-    results = {x for sublist in results for x in sublist}
-    return results
-
-
-if __name__ == '__main__':
-    parser = ArgumentParser()
-    parser.add_argument('string')
-    parser.add_argument('template')
-    args = parser.parse_args()
-
-    print(boyer_moore(args.string, args.template))
