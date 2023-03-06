@@ -11,16 +11,26 @@ import java.util.Random;
 
 public class MyAlg {
 
+    int pop;
+    int dim;
+    int gen;
+    double best;
+    double[] solution;
+
     public static void main(String[] args) {
         int dimension = 2; // dimension of problem
         int populationSize = 10; // size of population
         int generations = 10; // number of generations
 
-        algo(dimension, populationSize, generations);
+        MyAlg alg = new MyAlg();
+        alg.algo(dimension, populationSize, generations);
     }
 
-    public static void algo(int dimension, int populationSize, int generations){
+    public void algo(int dimension, int populationSize, int generations){
         Random random = new Random(); // random
+        pop = populationSize;
+        dim = dimension;
+        gen = generations;
 
         CandidateFactory<double[]> factory = new MyFactory(dimension); // generation of solutions
 
@@ -42,6 +52,8 @@ public class MyAlg {
                 System.out.println("Generation " + populationData.getGenerationNumber() + ": " + bestFit);
                 System.out.println("\tBest solution = " + Arrays.toString((double[])populationData.getBestCandidate()));
                 System.out.println("\tPop size = " + populationData.getPopulationSize());
+                solution = (double[])populationData.getBestCandidate();
+                best = bestFit;
             }
         });
 
