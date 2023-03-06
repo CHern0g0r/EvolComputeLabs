@@ -1,4 +1,4 @@
-package lab2;
+package lab03;
 
 import org.uncommons.watchmaker.framework.*;
 import org.uncommons.watchmaker.framework.operators.EvolutionPipeline;
@@ -16,6 +16,10 @@ public class MyAlg {
         int populationSize = 10; // size of population
         int generations = 10; // number of generations
 
+        algo(dimension, populationSize, generations);
+    }
+
+    public static void algo(int dimension, int populationSize, int generations){
         Random random = new Random(); // random
 
         CandidateFactory<double[]> factory = new MyFactory(dimension); // generation of solutions

@@ -1,4 +1,4 @@
-package lab2;
+package lab03;
 
 import org.uncommons.watchmaker.framework.factories.AbstractCandidateFactory;
 
@@ -17,6 +17,11 @@ public class MyFactory extends AbstractCandidateFactory<double[]> {
         // x from -5.0 to 5.0
 
         // your implementation:
+        Random r = new Random();
+
+        for (int i = 0; i < dimension; i++) {
+            solution[i] = -5.0 + r.nextDouble() * (10.0);
+        }
 
         return solution;
     }

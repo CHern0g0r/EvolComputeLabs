@@ -1,4 +1,4 @@
-package lab2;
+package lab03;
 
 import org.uncommons.watchmaker.framework.FitnessEvaluator;
 
