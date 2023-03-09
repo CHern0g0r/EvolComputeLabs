@@ -17,25 +17,33 @@ public class MyCrossover extends AbstractCrossover<double[]> {
         // your implementation:
 
         double[] child = new double[p1.length];
+        int border = random.nextInt(p1.length);
         for (int j = 0; j < child.length; j++) {
-            child[j] = coord_mate(p1[j], p2[j]);
+            // child[j] = coord_mate(p1[j], p2[j], random);
+            if (j < border) child[j] = p1[j];
+            else child[j] = p2[j];
         }
         children.add(child);
-//        children.add(p1);
-//        children.add(p2);
         return children;
     }
 
-    private double coord_mate(double p1, double p2) {
+    private double coord_mate(double p1, double p2, Random random) {
         double result;
-        // result = (p1 + p2) / 2.0;
+        result = (p1 + p2) / 2.0;
 
-        Random r = new Random();
-        if (r.nextBoolean()) {
-            result = p1;
-        } else {
-            result = p2;
+        if (random.nextBoolean()) {
+            if (random.nextBoolean()) {
+                result = p1;
+            } else {
+                result = p2;
+            }
         }
+
+        // if (r.nextBoolean()) {
+        //     result = p1;
+        // } else {
+        //     result = p2;
+        // }
 
         return result;
     }

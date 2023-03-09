@@ -14,6 +14,7 @@ public class MyAlg {
     int pop;
     int dim;
     int gen;
+    int bestGen;
     double best;
     double[] solution;
 
@@ -50,10 +51,13 @@ public class MyAlg {
             public void populationUpdate(PopulationData populationData) {
                 double bestFit = populationData.getBestCandidateFitness();
                 System.out.println("Generation " + populationData.getGenerationNumber() + ": " + bestFit);
-                System.out.println("\tBest solution = " + Arrays.toString((double[])populationData.getBestCandidate()));
+                // System.out.println("\tBest solution = " + Arrays.toString((double[])populationData.getBestCandidate()));
                 System.out.println("\tPop size = " + populationData.getPopulationSize());
                 solution = (double[])populationData.getBestCandidate();
-                best = bestFit;
+                if (bestFit > best) {
+                    best = bestFit;
+                    bestGen = populationData.getGenerationNumber();
+                }
             }
         });
 
