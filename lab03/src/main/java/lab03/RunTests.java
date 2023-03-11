@@ -10,32 +10,28 @@ public class RunTests {
 
     public static void main(String[] args) {
 
-        int n = 1000;
+        int n = 50;
         int dm = 100;
 
         int[][] params = {
-            // {10, 10},
-            // {10, 50},
-            // {50, 10},
-            // {50, 50},
-            // {10, 100},
-            // {100, 10},
-            // {100, 100},
-            {100, 1000},
+            {50, 10000, 100},
+            {100, 10000, 100}
         };
         ArrayList<ExpSetup> all_exps = new ArrayList<ExpSetup>();
         ArrayList<ExpSetup> exps = new ArrayList<ExpSetup>();
 
         for (int[] p : params) {
-            ExpSetup eg = new ExpSetup(dm, p[0], p[1]);
+            ExpSetup eg = new ExpSetup(p[2], p[0], p[1]);
             for (int k = 0; k < n; k++) {
-                ExpSetup e = new ExpSetup(dm, p[0], p[1]);
+                ExpSetup e = new ExpSetup(p[2], p[0], p[1]);
                 single_test(e);
                 all_exps.add(e);
                 eg.update_mean_best(e.best, e.best_epoch, n);
             }
             exps.add(eg);
         }
+
+        System.out.printf("%n%n Start Experiments%n%n");
 
         for (ExpSetup e : exps) {
             System.out.printf(
@@ -51,8 +47,6 @@ public class RunTests {
             );
             System.out.printf("<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>%n%n");
         }
-
-        // System.out.println("s6");
     }
 
     public static void single_test(ExpSetup e) {
