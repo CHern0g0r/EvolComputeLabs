@@ -29,6 +29,29 @@ public class TspSolution {
         this.values = values.clone();
     }
 
+    public TspSolution(TspSolution from) {
+        dim = from.dim;
+        this.values = from.values.clone();
+    }
+
+    public String toString() {
+        return "";
+    }
+
+    public int get(int i) {
+        return values[i];
+    }
+
+    public void set(int i, int v) {
+        values[i] = v;
+    }
+
+    public void swap(int a, int b) {
+        int tmp = values[a];
+        values[a] = values[b];
+        values[b] = tmp;
+    }
+
     public int[] generate(Random rand) {
         int[] vals = IntStream.rangeClosed(1, dim).toArray();
 

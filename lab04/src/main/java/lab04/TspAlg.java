@@ -19,7 +19,9 @@ public class TspAlg {
 
         Random random = new Random(); // random
 
-        CandidateFactory<TspSolution> factory = new TspFactory(); // generation of solutions
+        FitnessEvaluator<TspSolution> evaluator = new TspFitnessFunction(problem); // Fitness function
+
+        CandidateFactory<TspSolution> factory = new TspFactory(evaluator.graph.size()); // generation of solutions
 
         ArrayList<EvolutionaryOperator<TspSolution>> operators = new ArrayList<EvolutionaryOperator<TspSolution>>();
         operators.add(new TspCrossover()); // Crossover
@@ -27,8 +29,6 @@ public class TspAlg {
         EvolutionPipeline<TspSolution> pipeline = new EvolutionPipeline<TspSolution>(operators);
 
         SelectionStrategy<Object> selection = new RouletteWheelSelection(); // Selection operator
-
-        FitnessEvaluator<TspSolution> evaluator = new TspFitnessFunction(problem); // Fitness function
 
         EvolutionEngine<TspSolution> algorithm = new SteadyStateEvolutionEngine<TspSolution>(
                 factory, pipeline, evaluator, selection, populationSize, false, random);

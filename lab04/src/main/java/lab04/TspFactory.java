@@ -17,7 +17,7 @@ public class TspFactory extends AbstractCandidateFactory<TspSolution> {
     }
 
     public TspSolution generateRandomCandidate(Random random) {
-        TspSolution solution = new TspSolution(dimension);
+        TspSolution solution = new TspSolution(dimension, random);
         //your implementation
         return solution;
     }

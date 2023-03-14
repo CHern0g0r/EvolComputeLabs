@@ -13,7 +13,7 @@ public class TspFitnessFunction implements FitnessEvaluator<TspSolution> {
     private String PROBLEMS = "./EvolComputeLabs/lab04/data/vlsi/";
     // private String PROBLEMS = "../../../../data/vlsi/";
     private String path;
-    private ArrayList<String[]> graph;
+    private ArrayList<double[]> graph;
 
     public TspFitnessFunction(String problem) {
         path = String.format(
@@ -22,7 +22,7 @@ public class TspFitnessFunction implements FitnessEvaluator<TspSolution> {
             problem
         );
 
-        graph = new ArrayList<String[]>();
+        graph = new ArrayList<double[]>();
         File f = new File(path);
         
         System.out.println(path);
@@ -37,7 +37,8 @@ public class TspFitnessFunction implements FitnessEvaluator<TspSolution> {
                     System.out.println("FOUND");
                     while (sc.hasNextLine()) {
                         next = sc.nextLine();
-                        graph.add(next.trim().split(" "));
+                        double[] vals = Arrays.stream(next.trim().split(" ")).skip(1).mapToDouble(Double::parseDouble).toArray();
+                        graph.add(vals);
                     }
                 }
             }
@@ -49,10 +50,28 @@ public class TspFitnessFunction implements FitnessEvaluator<TspSolution> {
     }
 
     public double getFitness(TspSolution solution, List<? extends TspSolution> list) {
-        return 0.0;
+        double fitness = 0.0;
+        for (int j = 0; j < solution.dim; j++) {
+            fitness += getDistance(j, (j+1) % solution.dim);
+        }
+        return fitness;
     }
 
     public boolean isNatural() {
         return false;
+    }
+
+    public double getDistance(int a, int b) {
+        b -= 1;
+        a -= 1;
+        
+        double[] t1 = graph.get(a);
+        double[] t2 = graph.get(b);
+        
+        return euc(t1[0], t1[1], t2[0], t2[1]);
+    }
+
+    public double euc(double x1, double y1, double x2, double y2) {
+        return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
     }
 }
