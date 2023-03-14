@@ -1,24 +1,48 @@
 package lab04;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+
 public class Experiment {
 
     public static void main(String[] args) {
 
         int nexp = 10;
-        int populationSize = 500; // size of population
+        int populationSize = 200; // size of population
         int generations = 100000; // number of generations
-        String problem = "rbx711"; // name of problem or path to input file
+        // String problem = "pma343"; // name of problem or path to input file
+        String[] problems = {
+            "xqg237",
+            "pka379",
+            "bcl380",
+            "pbk411"
+        };
+        String report_path = "./EvolComputeLabs/lab04/data/report.txt";
 
-        Pair mean_results = new Pair();
-        for (int j = 0; j < nexp; j++) {
-            Pair result = run_single(populationSize, generations, problem);
-            mean_results.epoch += result.epoch;
-            mean_results.tour += result.tour;
+        File f = new File(report_path);
+        try {
+            f.createNewFile();
+        } catch (IOException e) {
+            System.out.println(e);
         }
-        mean_results.epoch /= nexp;
-        mean_results.tour /= nexp;
+        toFile(report_path, "-----------------------------\n");
 
-        report(problem, mean_results, populationSize, generations);
+        for (String problem : problems) {
+            Pair mean_results = new Pair();
+            for (int j = 0; j < nexp; j++) {
+                Pair result = run_single(populationSize, generations, problem);
+                mean_results.epoch += result.epoch;
+                mean_results.tour += result.tour;
+            }
+            mean_results.epoch /= nexp;
+            mean_results.tour /= nexp;
+
+            String rep = report(problem, mean_results, populationSize, generations);
+            toFile(report_path, rep);
+        }
     }
 
     public static Pair run_single(int populationSize,
@@ -35,13 +59,13 @@ public class Experiment {
         return new Pair(tsp.best_epoch, tsp.best_tour);
     }
 
-    public static void report(String problem,
+    public static String report(String problem,
                               Pair res,
                               int popsize,
                               int gens) {
 
         Integer size = Integer.parseInt(problem.replaceAll("[\\D]", ""));
-        String template = "|%s|%d|%d ; %d|%f|%f||";
+        String template = "|%s|%d|%d ; %d|%f|%f||\n";
         String result = String.format(
             template,
             problem,
@@ -52,7 +76,19 @@ public class Experiment {
             res.epoch
         );
 
-        System.out.println(result);
+        return result;
+    }
+
+    public static void toFile(String path, String res) {
+        try {
+            Files.write(
+                Paths.get(path),
+                res.getBytes(),
+                StandardOpenOption.APPEND
+            );
+        } catch (IOException e) {
+            System.out.println(e);
+        }
     }
 }
 
