@@ -1,6 +1,8 @@
 package lab04;
 
 import org.uncommons.watchmaker.framework.EvolutionaryOperator;
+import org.uncommons.maths.number.ConstantGenerator;
+import org.uncommons.maths.number.NumberGenerator;
 import org.uncommons.maths.random.PoissonGenerator;
 
 import java.util.ArrayList;
@@ -39,12 +41,12 @@ public class TspMutation implements EvolutionaryOperator<TspSolution> {
             TspSolution newCandidate = new TspSolution(candidate);
             int mutationCount = Math.abs(CountGen.nextValue());
             for (int i = 0; i < mutationCount; i++) {
-                int fromIndex = random.nextInt(newCandidate.size());
+                int fromIndex = random.nextInt(newCandidate.dim);
                 int mutationAmount = AmountGen.nextValue();
-                int toIndex = (fromIndex + mutationAmount) % newCandidate.size();
+                int toIndex = (fromIndex + mutationAmount) % newCandidate.dim;
                 if (toIndex < 0)
                 {
-                    toIndex += newCandidate.size();
+                    toIndex += newCandidate.dim;
                 }
 
                 newCandidate.swap(fromIndex, toIndex);

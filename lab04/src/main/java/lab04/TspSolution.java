@@ -1,11 +1,11 @@
 package lab04;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class TspSolution {
@@ -35,7 +35,9 @@ public class TspSolution {
     }
 
     public String toString() {
-        return "";
+        return Arrays.stream(values)
+            .mapToObj(String::valueOf)
+            .collect(Collectors.joining(",","[","]"));
     }
 
     public int get(int i) {
@@ -53,10 +55,13 @@ public class TspSolution {
     }
 
     public int[] generate(Random rand) {
-        int[] vals = IntStream.rangeClosed(1, dim).toArray();
+        // int[] vals = IntStream.rangeClosed(1, dim).toArray();
 
-        Collections.shuffle(Arrays.asList(vals), rand);
-        // return valList.stream().mapToInt(i->i).toArray();
-        return vals;
+        // Collections.shuffle(Arrays.asList(vals), rand);
+        List<Integer> valList = IntStream.range(0, dim).boxed().collect(Collectors.toList());
+        Collections.shuffle(valList);
+
+        return valList.stream().mapToInt(i->i).toArray();
+        // return vals;
     }
 }
