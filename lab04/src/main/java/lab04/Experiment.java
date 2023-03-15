@@ -11,7 +11,7 @@ public class Experiment {
     public static void main(String[] args) {
 
         int nexp = 10;
-        int populationSize = 200; // size of population
+        int populationSize = 500; // size of population
         int generations = 100000; // number of generations
         // String problem = "pma343"; // name of problem or path to input file
         String[] problems = {
