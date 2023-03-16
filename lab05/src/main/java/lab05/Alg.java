@@ -7,6 +7,10 @@ import org.uncommons.watchmaker.framework.selection.RankSelection;
 import org.uncommons.watchmaker.framework.selection.RouletteWheelSelection;
 import org.uncommons.watchmaker.framework.selection.TournamentSelection;
 import org.uncommons.watchmaker.framework.termination.GenerationCount;
+import org.uncommons.watchmaker.framework.termination.TargetFitness;
+import org.uncommons.maths.number.ConstantGenerator;
+import org.uncommons.maths.number.NumberGenerator;
+import org.uncommons.maths.random.PoissonGenerator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,44 +18,45 @@ import java.util.Random;
 
 public class Alg {
 
-    double best_tour;
+    double best_fit;
     int best_epoch;
 
     public static void main(String[] args) {
 
         int populationSize = 100; // size of population
-        int generations = 10000; // number of generations
-        String problem = "xqf131"; // name of problem or path to input file
+        int generations = 1000; // number of generations
+        int dim = 16;
         Alg alg = new Alg();
 
         alg.run(
+            dim,
             populationSize,
-            generations,
-            problem
+            generations
         );
+
+        System.out.println(alg.best_epoch);
     }
 
     public Alg() {
         best_epoch = 0;
-        best_tour = Double.POSITIVE_INFINITY;
+        best_fit = Double.POSITIVE_INFINITY;
     }
 
-    public void run(int populationSize,
-                    int generations,
-                    String problem) {
+    public void run(int dim,
+                    int populationSize,
+                    int generations) {
 
 
         Random random = new Random(); // random
 
-        Task task = new Task(problem);
+        FitnessEvaluator<Solution> evaluator = new FitnessFunction(); // Fitness function
 
-        FitnessEvaluator<Solution> evaluator = new FitnessFunction(task); // Fitness function
-
-        CandidateFactory<Solution> factory = new Factory(task.getDim()); // generation of solutions
+        CandidateFactory<Solution> factory = new Factory(dim); // generation of solutions
 
         ArrayList<EvolutionaryOperator<Solution>> operators = new ArrayList<EvolutionaryOperator<Solution>>();
         operators.add(new Crossover()); // Crossover
-        operators.add(new Mutation()); // Mutation
+        operators.add(new Mutation());
+        // operators.add(new Mutation(new ConstantGenerator<Integer>(1), new PoissonGenerator(1.5, random))); // Mutation
         EvolutionPipeline<Solution> pipeline = new EvolutionPipeline<Solution>(operators);
 
         // Selection operator
@@ -75,15 +80,16 @@ public class Alg {
                 double bestFit = populationData.getBestCandidateFitness();
                 System.out.println("Generation " + populationData.getGenerationNumber() + ": " + bestFit);
                 Solution best = (Solution)populationData.getBestCandidate();
-                if (bestFit < best_tour) {
-                    best_tour = bestFit;
+                if (bestFit < best_fit) {
+                    best_fit = bestFit;
                     best_epoch = populationData.getGenerationNumber();
                 }
-                // System.out.println("\tBest solution = " + best.toString());
+                System.out.println("\tBest solution = " + best.toString());
             }
         });
 
-        TerminationCondition terminate = new GenerationCount(generations);
+        // TerminationCondition terminate = new GenerationCount(generations);
+        TerminationCondition terminate = new TargetFitness(0, false);
         algorithm.evolve(populationSize, 1, terminate);
     }
 }
