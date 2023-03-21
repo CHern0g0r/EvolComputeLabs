@@ -10,8 +10,14 @@ import java.util.List;
 import java.util.Scanner;
 
 public class FitnessFunction implements FitnessEvaluator<Solution> {
+    int counter;
+
+    public FitnessFunction() {
+        counter = 0;
+    }
 
     public double getFitness(Solution solution, List<? extends Solution> list) {
+        counter++;
         double fitness = 0;  // non-attacking pairs of queens
 
         for (int col = 0; col < solution.dim; col++) {

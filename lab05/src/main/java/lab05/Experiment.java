@@ -11,16 +11,26 @@ public class Experiment {
     public static void main(String[] args) {
 
         int nexp = 10;
-        int populationSize = 500; // size of population
-        int generations = 100000; // number of generations
-        // String problem = "pma343"; // name of problem or path to input file
+        int populationSize = 1000; // size of population
         int[] problems = {
-            4,
-            8,
-            16,
-            32
+            // 4,
+            // 8,
+            // 16,
+            32,
+            64,
+            128,
+            512
         };
-        String report_path = "./EvolComputeLabs/lab04/data/report.txt";
+        int[] mutations = {
+            // 10,
+            50,
+            100,
+            200,
+            500,
+            1000
+        };
+        String report_path = "./EvolComputeLabs/lab05/report.txt";
+        String solutions_path = "./EvolComputeLabs/lab05/sols.txt";
 
         File f = new File(report_path);
         try {
@@ -30,48 +40,58 @@ public class Experiment {
         }
         toFile(report_path, "-----------------------------\n");
 
-        for (int problem : problems) {
-            Pair mean_results = new Pair();
-            for (int j = 0; j < nexp; j++) {
-                Pair result = run_single(populationSize, generations, problem);
-                mean_results.epoch += result.epoch;
-                mean_results.tour += result.tour;
-            }
-            mean_results.epoch /= nexp;
-            mean_results.tour /= nexp;
+        for (int mut: mutations) {
+            for (int problem : problems) {
+                Result mean_results = new Result();
+                mean_results.mutations = mut;
+                for (int j = 0; j < nexp; j++) {
+                    Result result = run_single(
+                        populationSize,
+                        problem,
+                        mut
+                    );
+                    mean_results.epoch += result.epoch;
+                    mean_results.fitness_eval += result.fitness_eval;
+                    mean_results.best += result.best;
+                    toFile(solutions_path, result.solution.toString() + "\n");
+                }
+                mean_results.epoch /= nexp;
+                mean_results.fitness_eval /= nexp;
+                mean_results.best /= nexp;
 
-            String rep = report(problem, mean_results, populationSize, generations);
-            toFile(report_path, rep);
+                String rep = report(problem, mean_results, populationSize);
+                toFile(report_path, rep);
+            }
         }
     }
 
-    public static Pair run_single(int populationSize,
-                                  int generations,
-                                  int problem) {
+    public static Result run_single(int populationSize,
+                                    int problem,
+                                    int mutations) {
         Alg alg  = new Alg();
 
         alg.run(
+            problem,
             populationSize,
-            generations,
-            problem
+            mutations
         );
 
-        return new Pair(alg.best_epoch, alg.best_fit);
+        return new Result(alg.best_epoch, alg.best_solution, alg.fitness_eval, alg.best_fit);
     }
 
     public static String report(int problem,
-                                Pair res,
-                                int popsize,
-                                int gens) {
+                                Result res,
+                                int popsize) {
 
-        String template = "|%d|%d ; %d|%f|%f||\n";
+        String template = "| %d | %d | %d | %.2f | %.2f | > %.2f\n";
         String result = String.format(
             template,
             problem,
             popsize,
-            gens,
-            res.tour,
-            res.epoch
+            res.mutations,
+            res.fitness_eval,
+            res.epoch,
+            res.best
         );
 
         return result;
@@ -90,16 +110,28 @@ public class Experiment {
     }
 }
 
-class Pair {
+class Result {
     double epoch;
-    double tour;
+    double fitness_eval;
+    double best;
+    Solution solution;
+    int mutations;
 
-    Pair() {
-        this(0, 0);
+    Result() {
+        epoch = 0;
+        fitness_eval = 0;
+        best = 0;
     }
 
-    Pair(double e, double t) {
+    Result(double e, Solution s, double fe, double b) {
+        this(e, s, fe, b, 1);
+    }
+
+    Result(double e, Solution s, double fe, double b, int m) {
         epoch = e;
-        tour = t;
+        solution = s;
+        fitness_eval = fe;
+        best = b;
+        mutations = m;
     }
 }

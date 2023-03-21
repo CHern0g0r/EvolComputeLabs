@@ -35,6 +35,7 @@ public class Crossover extends AbstractCrossover<Solution> {
         // Collections.shuffle(Arrays.asList(ints), random);
         int l = Math.min(ints[0], ints[1]);
         int r = Math.max(ints[0], ints[1]);
+        // System.out.println(l + " " + r);
         HashSet<Integer> m1 = new HashSet<>();
         HashSet<Integer> m2 = new HashSet<>();
         

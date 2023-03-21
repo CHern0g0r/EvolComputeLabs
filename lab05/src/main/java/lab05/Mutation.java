@@ -42,15 +42,20 @@ public class Mutation implements EvolutionaryOperator<Solution> {
             int mutationCount = Math.abs(CountGen.nextValue());
             for (int i = 0; i < mutationCount; i++) {
                 int fromIndex = random.nextInt(newCandidate.dim);
-                int mutationAmount = AmountGen.nextValue();
-                int toIndex = (fromIndex + mutationAmount) % newCandidate.dim;
-                if (toIndex < 0)
-                {
-                    toIndex += newCandidate.dim;
-                }
-
+                // int mutationAmount = AmountGen.nextValue();
+                // int toIndex = (fromIndex + mutationAmount) % newCandidate.dim;
+                // if (toIndex < 0)
+                // {
+                //     toIndex += newCandidate.dim;
+                // }
+                int toIndex;
+                do {
+                    toIndex = random.nextInt(newCandidate.dim);
+                } while (toIndex == fromIndex);
+                
                 newCandidate.swap(fromIndex, toIndex);
             }
+            // System.out.println(candidate.toString() + " " + newCandidate.toString());
             result.add(newCandidate);
         }
 
