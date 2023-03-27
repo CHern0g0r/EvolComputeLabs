@@ -13,7 +13,24 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-public class IslandsAlg {
+public class IslandsAlg implements Algorithm {
+    double fitness;
+    int island_count;
+    int epoch_length;
+
+    IslandsAlg(int island_count) {
+        fitness = 0;
+        this.island_count = island_count;
+        epoch_length = 50;
+    }
+
+    IslandsAlg() {
+        this(20);
+    }
+
+    public IslandsAlg(boolean b) {
+        this();
+    }
 
     public static void main(String[] args) {
         int dimension = 50; // dimension of problem
@@ -21,7 +38,23 @@ public class IslandsAlg {
         int populationSize = 50; // size of population
         int generations = 10; // number of generations
 
+        IslandsAlg ia = new IslandsAlg();
+        double f = ia.run(
+            dimension,
+            complexity,
+            populationSize,
+            generations
+        );
+        System.out.println(f);
+    }
+
+    public double run(int dimension,
+                            int complexity,
+                            int populationSize,
+                            int generations) {
         Random random = new Random(); // random
+        populationSize /= island_count;
+        generations /= epoch_length;
 
         CandidateFactory<double[]> factory = new MyFactory(dimension); // generation of solutions
 
@@ -34,24 +67,43 @@ public class IslandsAlg {
 
         FitnessEvaluator<double[]> evaluator = new MultiFitnessFunction(dimension, complexity); // Fitness function
 
-        IslandEvolution<double[]> island_model = null; // your model;
+        Migration migration = new RingMigration();
+
+        IslandEvolution<double[]> island_model = new IslandEvolution<>(
+            island_count,
+            migration,
+            factory,
+            pipeline,
+            evaluator,
+            selection,
+            random
+        );
+
 
         island_model.addEvolutionObserver(new IslandEvolutionObserver() {
             public void populationUpdate(PopulationData populationData) {
                 double bestFit = populationData.getBestCandidateFitness();
                 System.out.println("Epoch " + populationData.getGenerationNumber() + ": " + bestFit);
-                System.out.println("\tEpoch best solution = " + Arrays.toString((double[])populationData.getBestCandidate()));
+                if (bestFit > fitness) {
+                    fitness = bestFit;
+                }
+                // System.out.println("\tEpoch best solution = " + Arrays.toString((double[])populationData.getBestCandidate()));
             }
 
             public void islandPopulationUpdate(int i, PopulationData populationData) {
                 double bestFit = populationData.getBestCandidateFitness();
-                System.out.println("Island " + i);
-                System.out.println("\tGeneration " + populationData.getGenerationNumber() + ": " + bestFit);
-                System.out.println("\tBest solution = " + Arrays.toString((double[])populationData.getBestCandidate()));
+                if (bestFit > fitness) {
+                    fitness = bestFit;
+                }
+                // System.out.println("Island " + i);
+                // System.out.println("\tGeneration " + populationData.getGenerationNumber() + ": " + bestFit);
+                // System.out.println("\tBest solution = " + Arrays.toString((double[])populationData.getBestCandidate()));
             }
         });
 
         TerminationCondition terminate = new GenerationCount(generations);
-        island_model.evolve(populationSize, 1, 50, 2, terminate);
+        island_model.evolve(populationSize, 1, epoch_length, 2, terminate);
+
+        return fitness;
     }
 }
