@@ -25,7 +25,7 @@ public class IslandsAlg implements Algorithm {
     }
 
     IslandsAlg() {
-        this(20);
+        this(5);
     }
 
     public IslandsAlg(boolean b) {

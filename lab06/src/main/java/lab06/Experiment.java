@@ -1,11 +1,13 @@
 package lab06;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,24 +18,32 @@ import java.time.Instant;
 public class Experiment {
 
     public static void main(String[] args) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException {
-        // int[] comps = {1, 2, 3, 4, 5, 6, 7};
-        int[] comps = {1};
-        int nexp = 1;
-        int gens = 100;
+        int[] comps = {1, 2, 3, 4, 5, 6, 7};
+        int nexp = 16;
+        int gens = 1000;
         int dim = 50;
         int popsize = 100;
         
+        String report_path = "./EvolComputeLabs/lab06/report.txt";
+        File f = new File(report_path);
+        try {
+            f.createNewFile();
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+        toFile(report_path, "-----------------------------\n");
 
         for (int comp: comps) {
             Setup s = new Setup(comp, dim, nexp, gens, popsize);
             run_single(s);
+            String res = report(s);
+            toFile(report_path, res);
         }
     }
 
     public static void run_single(Setup s) {
         for (AlgoSetup as: s.algos) {
             Instant start = Instant.now();
-            System.out.println("Alg");
             for (int i = 0; i < s.nexp; i++) {
                 Algorithm alg = as.get();
                 double fitness = alg.run(s.dim, s.comp, s.popsize, s.gens);
@@ -47,17 +57,23 @@ public class Experiment {
         s.average();
     }
 
-    public static String report(int problem,
-                                Setup res,
-                                int popsize) {
+    public static String report(Setup res) {
 
+        DecimalFormat df = new DecimalFormat("#.##");
         String template = (
-            "<tr>\n\t<td rowspan=2>%d</td>\n\t<td>Time</td>\n\t<td> %f </td>\n\t<td> %f </td>\n\t<td> %f </td>\n" +
-            "</tr>\n<tr>\n\t<td>Result</td>\n\t<td> %f </td>\n\t<td> %f </td>\n\t<td> %f </td>\n\t</tr>");
+            "<tr>\n\t<td rowspan=2>%d</td>\n\t<td>Time</td>\n%s" +
+            "</tr>\n<tr>\n\t<td>Result</td>\n%s</tr>");
+        StringBuilder ptimes = new StringBuilder();
+        StringBuilder pfit = new StringBuilder();
+        for (AlgoSetup a : res.algos) {
+            ptimes.append("\t<td> ").append(df.format(a.time)).append(" </td>\n");
+            pfit.append("\t<td> ").append(df.format(a.fitness)).append(" </td>\n");
+        }
         String result = String.format(
             template,
-            problem,
-            popsize
+            res.comp,
+            ptimes.toString(),
+            pfit.toString()
         );
 
         return result;
@@ -87,7 +103,7 @@ class Setup {
         false,
         false,
     };
-    List<AlgoSetup> algos;
+    ArrayList<AlgoSetup> algos;
     int comp;
     int nexp;
     int gens;
